@@ -17,6 +17,7 @@ namespace ipavMerge
             }
             String path1 = args[0];
             String path2 = args[1];
+            
 
             //First backup files so if dis dum progrum dun' goofs...
             int i = 0;
@@ -66,9 +67,15 @@ namespace ipavMerge
 
             //Load 'em up
             Console.WriteLine("Loading files...");
-            
+            StreamReader loggedAddresses1 = new StreamReader(path1 + "loggedAddresses.ipav");
+            List<Parent> ListAddresses1 = listLoader(loggedAddresses1);
+            Console.WriteLine("loggedAddresses.ipav contains: ");
+            Action<Parent> print = link =>
+            {
+                Console.WriteLine(link);
+            };
+            ListAddresses1.ForEach(print);
 
-            
         }
         static bool copyFiles(String sourcePath, String sourceFile, String destinationPath)
         {
@@ -98,7 +105,38 @@ namespace ipavMerge
             else
                 return false;
         }
-        
-        
+
+        static List<Parent> listLoader(StreamReader file)
+        {
+            int key = 0;
+            List<Parent> leList = new List<Parent>();
+            String line = file.ReadLine();
+            while (line != null) //redundant because yolo
+            {
+                String parent = line;
+                line = file.ReadLine();
+                List<Child> child = new List<Child>();
+                //Stupid code incoming
+                while (line.Substring(0, 1).Equals("-"))
+                {
+                    String[] stupid = line.Split('\"');
+                    key++;
+                    Console.WriteLine(stupid.Length + " key: " + key);
+                    child.Add(new Child(stupid[0],
+                        stupid[1],
+                        stupid[2],
+                        stupid[3],
+                        stupid[4],
+                        stupid[5],
+                        stupid[6],
+                        stupid[7]));
+                    line = file.ReadLine();
+                    if (line == null)
+                        break;
+                }
+                leList.Add(new Parent(parent, child));
+            }
+            return leList;
+        }
     }
 }
