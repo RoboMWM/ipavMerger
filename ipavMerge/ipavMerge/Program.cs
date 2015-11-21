@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ipavMerge
 {
@@ -69,9 +66,7 @@ namespace ipavMerge
 
             //Load 'em up
             Console.WriteLine("Loading files...");
-            StreamReader loggedAddresses1 = new StreamReader(path1 + "loggedAddresses.ipav");
-            List<Parent> LoggedAddresses1 = listLoader(loggedAddresses1, 1);
-            Console.WriteLine("loggedAddresses.ipav has " + la1 + " lines.");
+            
 
             
         }
@@ -103,33 +98,7 @@ namespace ipavMerge
             else
                 return false;
         }
-        static List<Parent> listLoader(StreamReader file, int which)
-        {
-            List<Parent> leList = new List<Parent>();
-            String line = file.ReadLine();
-            int key = 0;
-            while (line != null) //redundant because yolo
-            {
-                if (!line.Substring(0,1).Equals("-"))
-                {
-                    String parent = line;
-                    List<Child> child = new List<Child>();
-                    //Stupid code incoming
-                    while (line.Substring(0,1).Equals("-"))
-                    {
-                        String[] stupid = line.Split('\"');
-                        List<string> moreStupid = new List<string>();
-                        for (int i = 0; i <= 8; i++)
-                        {
-                            moreStupid.Add(stupid[i]);
-                        }
-                        child.Add((Child)moreStupid);
-                    }
-                }
-                if (line == null)
-                    break;
-            }
-            //return
-        }
+        
+        
     }
 }

@@ -6,26 +6,31 @@ using System.Threading.Tasks;
 
 namespace ipavMerge
 {
-    class Child
+    public class Child
     {
-        string name { get; set; }
-        string uuid { get; set; }
-        string ip { get; set; }
-        string dateTimeStamp { get; set; }
-        int idc { get; set; } //kek
-        string city { get; set; }
-        string state { get; set; } //'merica
-        string country { get; set; }
+        private string name { get; set; }
+        private string uuid { get; set; }
+        private string ip { get; set; }
+        private string dateTimeStamp { get; set; }
+        private string idc { get; set; } //kek
+        private string city { get; set; }
+        private string state { get; set; } //'merica
+        private string country { get; set; }
 
-        //public void childAdd(string name, string uuid, string dateTimeStamp, int idc, string city, string state, string country)
+        //public void AddChild(List<Child> child)
         //{
-        //    this.name = name;
-        //    this.uuid = uuid;
-        //    this.dateTimeStamp = dateTimeStamp;
-        //    this.idc = idc;
-        //    this.city = city;
-        //    this.state = state;
-        //    this.country = country;
+        //    child.Add(child);
         //}
+        public Child(string name, string uuid, string ip, string dateTimeStamp, string idc, string city, string state, string country)
+        {
+            this.name = name;
+            this.uuid = uuid;
+            this.dateTimeStamp = dateTimeStamp;
+            this.ip = ip;
+            this.idc = idc;
+            this.city = city;
+            this.state = state;
+            this.country = country;
+        }
     }
 }
