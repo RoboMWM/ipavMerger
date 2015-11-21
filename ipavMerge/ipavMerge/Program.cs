@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ipavMerge
 {
@@ -68,13 +69,43 @@ namespace ipavMerge
             //Load 'em up
             Console.WriteLine("Loading files...");
             StreamReader loggedAddresses1 = new StreamReader(path1 + "loggedAddresses.ipav");
+            StreamReader loggedPlayers1 = new StreamReader(path1 + "loggedPlayers.ipav");
+            StreamReader loggedUUIDs1 = new StreamReader(path1 + "loggedUUIDs.ipav");
+            StreamReader loggedAddresses2 = new StreamReader(path2 + "loggedAddresses.ipav");
+            StreamReader loggedPlayers2 = new StreamReader(path2 + "loggedPlayers.ipav");
+            StreamReader loggedUUIDs2 = new StreamReader(path2 + "loggedUUIDs.ipav");
+            Console.WriteLine("Parsing files...");
             List<Parent> ListAddresses1 = listLoader(loggedAddresses1);
-            Console.WriteLine("loggedAddresses.ipav contains: ");
-            Action<Parent> print = link =>
+            List<Parent> ListPlayers1 = listLoader(loggedPlayers1);
+            List<Parent> ListUUIDs1 = listLoader(loggedUUIDs1);
+            List<Parent> ListAddresses2 = listLoader(loggedAddresses2);
+            List<Parent> ListPlayers2 = listLoader(loggedPlayers2);
+            List<Parent> ListUUIDs2 = listLoader(loggedUUIDs2);
+
+            for (int j = 0; j < ListAddresses1.Count; j++)
             {
-                Console.WriteLine(link);
-            };
-            ListAddresses1.ForEach(print);
+                if (!ListAddresses2.Contains(ListAddresses1[j]))
+                {
+                    //Console.WriteLine("yay" + j);
+                }
+            }
+
+            //for (int j = 0; j < ListPlayers1.Count; j++)
+            //{
+            //    for (int k = 0; k < ListPlayers2.Count; k++)
+            //    {
+            //        if (ListPlayers2[k].ToString().Equals(ListPlayers1[j].ToString()))
+            //        {
+            //            Console.WriteLine(j + " yay " + k);
+            //        }
+            //    }
+            //}
+            //Console.WriteLine("loggedAddresses.ipav contains: ");
+            //Action<Parent> print = link =>
+            //{
+            //    Console.WriteLine(link);
+            //};
+            //ListAddresses1.ForEach(print);
 
         }
         static bool copyFiles(String sourcePath, String sourceFile, String destinationPath)
@@ -120,9 +151,24 @@ namespace ipavMerge
                 while (line.Substring(0, 1).Equals("-"))
                 {
                     String[] stupid = line.Split('\"');
-                    key++;
-                    Console.WriteLine(stupid.Length + " key: " + key);
-                    child.Add(new Child(stupid[0],
+                    //Check for keys split into more than one line
+                    if (stupid.Length < 8)
+                    {
+                        String firstLine = line;
+                        line = file.ReadLine();
+                        String mergedLines = String.Concat(firstLine, line);
+                        String[] stupider = mergedLines.Split('\"');
+                        child.Add(new Child(stupider[0],
+                        stupider[1],
+                        stupider[2],
+                        stupider[3],
+                        stupider[4],
+                        stupider[5],
+                        stupider[6],
+                        stupider[7]));
+                    }   
+                    else
+                        child.Add(new Child(stupid[0],
                         stupid[1],
                         stupid[2],
                         stupid[3],
@@ -130,6 +176,7 @@ namespace ipavMerge
                         stupid[5],
                         stupid[6],
                         stupid[7]));
+
                     line = file.ReadLine();
                     if (line == null)
                         break;
