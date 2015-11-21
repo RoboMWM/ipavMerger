@@ -62,6 +62,14 @@ namespace ipavMerge
                     //Set paths to working directory, then break loop.
                     path1 = "working1\\";
                     path2 = "working2\\";
+
+                    //Create stupid
+                    Directory.CreateDirectory(path1 + "loggedAddresses1");
+                    Directory.CreateDirectory(path1 + "loggedPlayers1");
+                    Directory.CreateDirectory(path1 + "loggedUUIDs1");
+                    Directory.CreateDirectory(path2 + "loggedAddresses2");
+                    Directory.CreateDirectory(path2 + "loggedPlayers2");
+                    Directory.CreateDirectory(path2 + "loggedUUIDs2");
                     break;
                 }
             }
@@ -74,21 +82,31 @@ namespace ipavMerge
             StreamReader loggedAddresses2 = new StreamReader(path2 + "loggedAddresses.ipav");
             StreamReader loggedPlayers2 = new StreamReader(path2 + "loggedPlayers.ipav");
             StreamReader loggedUUIDs2 = new StreamReader(path2 + "loggedUUIDs.ipav");
-            Console.WriteLine("Parsing files...");
-            List<Parent> ListAddresses1 = listLoader(loggedAddresses1);
-            List<Parent> ListPlayers1 = listLoader(loggedPlayers1);
-            List<Parent> ListUUIDs1 = listLoader(loggedUUIDs1);
-            List<Parent> ListAddresses2 = listLoader(loggedAddresses2);
-            List<Parent> ListPlayers2 = listLoader(loggedPlayers2);
-            List<Parent> ListUUIDs2 = listLoader(loggedUUIDs2);
+            Console.WriteLine("Making a mess...");
 
-            for (int j = 0; j < ListAddresses1.Count; j++)
-            {
-                if (!ListAddresses2.Contains(ListAddresses1[j]))
-                {
-                    //Console.WriteLine("yay" + j);
-                }
-            }
+            //Start of stupid code
+            makeMess(loggedAddresses1, path1 + "loggedAddresses1\\");
+            makeMess(loggedPlayers1, path1 + "loggedPlayers1\\");
+            makeMess(loggedUUIDs1, path1 + "loggedUUIDs1\\");
+            makeMess(loggedAddresses2, path2 + "loggedAddresses2\\");
+            makeMess(loggedPlayers2, path2 + "loggedPlayers2\\");
+            makeMess(loggedUUIDs2, path2 + "loggedUUIDs2\\");
+
+
+            //List<Parent> ListAddresses1 = listLoader(loggedAddresses1);
+            //List<Parent> ListPlayers1 = listLoader(loggedPlayers1);
+            //List<Parent> ListUUIDs1 = listLoader(loggedUUIDs1);
+            //List<Parent> ListAddresses2 = listLoader(loggedAddresses2);
+            //List<Parent> ListPlayers2 = listLoader(loggedPlayers2);
+            //List<Parent> ListUUIDs2 = listLoader(loggedUUIDs2);
+
+            //for (int j = 0; j < ListAddresses1.Count; j++)
+            //{
+            //    if (!ListAddresses2.Contains(ListAddresses1[j]))
+            //    {
+            //        //Console.WriteLine("yay" + j);
+            //    }
+            //}
 
             //for (int j = 0; j < ListPlayers1.Count; j++)
             //{
@@ -137,16 +155,24 @@ namespace ipavMerge
                 return false;
         }
 
-        static List<Parent> listLoader(StreamReader file)
+        //Stupid code rendition:
+        static void makeMess(StreamReader file, String path)
         {
-            int key = 0;
-            List<Parent> leList = new List<Parent>();
             String line = file.ReadLine();
             while (line != null) //redundant because yolo
             {
-                String parent = line;
+                String parent = "";
+                if (line.Substring(0, 1).Equals("'"))
+                {
+                    int secondQuotationMark = line.IndexOf("'", 2);
+                    parent = line.Substring(1, secondQuotationMark - 1);
+                }
+                else
+                {
+                    int colon = line.IndexOf(":", 1);
+                    parent = line.Substring(0, colon);
+                }
                 line = file.ReadLine();
-                List<Child> child = new List<Child>();
                 //Stupid code incoming
                 while (line.Substring(0, 1).Equals("-"))
                 {
@@ -156,34 +182,75 @@ namespace ipavMerge
                     {
                         String firstLine = line;
                         line = file.ReadLine();
-                        String mergedLines = String.Concat(firstLine, line);
-                        String[] stupider = mergedLines.Split('\"');
-                        child.Add(new Child(stupider[0],
-                        stupider[1],
-                        stupider[2],
-                        stupider[3],
-                        stupider[4],
-                        stupider[5],
-                        stupider[6],
-                        stupider[7]));
-                    }   
+                        using (StreamWriter leFile = new StreamWriter(path + parent, true))
+                        {
+                            leFile.WriteLine(firstLine);
+                            leFile.WriteLine(line);
+                        }
+                    }
                     else
-                        child.Add(new Child(stupid[0],
-                        stupid[1],
-                        stupid[2],
-                        stupid[3],
-                        stupid[4],
-                        stupid[5],
-                        stupid[6],
-                        stupid[7]));
+                    {
+                        using (StreamWriter leFile = new StreamWriter(path + parent, true))
+                        {
+                            leFile.WriteLine(line);
+                        }
+                    }
+                    
 
                     line = file.ReadLine();
                     if (line == null)
                         break;
                 }
-                leList.Add(new Parent(parent, child));
             }
-            return leList;
         }
+
+        //static List<Parent> listLoader(StreamReader file)
+        //{
+        //    int key = 0;
+        //    List<Parent> leList = new List<Parent>();
+        //    String line = file.ReadLine();
+        //    while (line != null) //redundant because yolo
+        //    {
+        //        String parent = line;
+        //        line = file.ReadLine();
+        //        List<Child> child = new List<Child>();
+        //        //Stupid code incoming
+        //        while (line.Substring(0, 1).Equals("-"))
+        //        {
+        //            String[] stupid = line.Split('\"');
+        //            //Check for keys split into more than one line
+        //            if (stupid.Length < 8)
+        //            {
+        //                String firstLine = line;
+        //                line = file.ReadLine();
+        //                String mergedLines = String.Concat(firstLine, line);
+        //                String[] stupider = mergedLines.Split('\"');
+        //                child.Add(new Child(stupider[0],
+        //                stupider[1],
+        //                stupider[2],
+        //                stupider[3],
+        //                stupider[4],
+        //                stupider[5],
+        //                stupider[6],
+        //                stupider[7]));
+        //            }   
+        //            else
+        //                child.Add(new Child(stupid[0],
+        //                stupid[1],
+        //                stupid[2],
+        //                stupid[3],
+        //                stupid[4],
+        //                stupid[5],
+        //                stupid[6],
+        //                stupid[7]));
+
+        //            line = file.ReadLine();
+        //            if (line == null)
+        //                break;
+        //        }
+        //        leList.Add(new Parent(parent, child));
+        //    }
+        //    return leList;
+        //}
     }
 }
