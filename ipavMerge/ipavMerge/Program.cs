@@ -79,13 +79,51 @@ namespace ipavMerge
             Console.WriteLine("Making a mess...");
 
 
-            //List<Parent> ListAddresses1 = listLoader(loggedAddresses1);
+            List<Parent> listAddresses1 = listLoader(loggedAddresses1);
             //List<Parent> ListPlayers1 = listLoader(loggedPlayers1);
-            //List<Parent> ListUUIDs1 = listLoader(loggedUUIDs1);
-            //List<Parent> ListAddresses2 = listLoader(loggedAddresses2);
+            List<Parent> listUUIDs1 = listLoader(loggedUUIDs1);
+            List<Parent> listAddresses2 = listLoader(loggedAddresses2);
             //List<Parent> ListPlayers2 = listLoader(loggedPlayers2);
-            //List<Parent> ListUUIDs2 = listLoader(loggedUUIDs2);
+            List<Parent> listUUIDs2 = listLoader(loggedUUIDs2);
+            List<Parent> mergedAddresses;
+            if (listAddresses1.Count > listAddresses2.Count)
+                mergedAddresses = mergeParents(listAddresses1, listAddresses2);
+            else
+                mergedAddresses = mergeParents(listAddresses2, listAddresses1);
 
+            Console.WriteLine("Looking for aliases...");
+            for (int z = 0; z < mergedAddresses.Count; z++)
+            {
+                List<Child> children = mergedAddresses[z].child;
+                Console.WriteLine(children);
+                int childCount = children.Count;
+                Console.WriteLine(mergedAddresses.Count + " yay " + childCount);
+                if (childCount > 1)
+                {
+                    for (int y = 0; y < childCount - 1; y++)
+                    {
+                        if (mergedAddresses[z].child[y].uuid != mergedAddresses[z].child[y + 1].uuid)
+                        {
+                            Console.WriteLine("Player " + mergedAddresses[z].child[y].name +
+                                " is an alias of " + mergedAddresses[z].child[y + 1].name);
+                        }
+                    }
+                }
+            }
+
+            List<Parent> mergedUUIDs;
+            if (listUUIDs1.Count > listUUIDs2.Count)
+                mergedUUIDs = mergeParents(listUUIDs1, listUUIDs2);
+            else
+                mergedUUIDs = mergeParents(listUUIDs2, listUUIDs1);
+
+            //for (int z = 0; z < mergedUUIDs.Count; z++)
+            //{
+            //    for (int y = 0; y < mergedUUIDs[z].child.Count; y++)
+            //    {
+            //        if (mergedUUIDs[z].child[y].ip.Equals())
+            //    }
+            //}
             //for (int j = 0; j < ListAddresses1.Count; j++)
             //{
             //    if (!ListAddresses2.Contains(ListAddresses1[j]))
@@ -94,22 +132,19 @@ namespace ipavMerge
             //    }
             //}
 
-            //for (int j = 0; j < ListPlayers1.Count; j++)
-            //{
-            //    for (int k = 0; k < ListPlayers2.Count; k++)
-            //    {
-            //        if (ListPlayers2[k].ToString().Equals(ListPlayers1[j].ToString()))
-            //        {
-            //            Console.WriteLine(j + " yay " + k);
-            //        }
-            //    }
-            //}
+
             //Console.WriteLine("loggedAddresses.ipav contains: ");
             //Action<Parent> print = link =>
             //{
             //    Console.WriteLine(link);
             //};
             //ListAddresses1.ForEach(print);
+
+            //Parent result = listAddresses1.Find(delegate (Parent par)
+            //{ return par.parent == searchFor; });
+
+
+
 
         }
         static bool copyFiles(String sourcePath, String sourceFile, String destinationPath)
@@ -141,55 +176,66 @@ namespace ipavMerge
                 return false;
         }
 
+        static List<Parent> listLoader(StreamReader file)
+        {
+            List<Parent> leList = new List<Parent>();
+            String line = file.ReadLine();
+            while (line != null)
+            {
+                String parent = "";
+                if (line.Substring(0, 1).Equals("'"))
+                {
+                    int secondQuotationMark = line.IndexOf("'", 2);
+                    parent = line.Substring(1, secondQuotationMark - 1);
+                }
+                else
+                {
+                    int colon = line.IndexOf(":", 1);
+                    parent = line.Substring(0, colon);
+                }
+                line = file.ReadLine();
+                List<Child> child = new List<Child>();
+                //Stupid code incoming
+                while (line.Substring(0, 1).Equals("-"))
+                {
+                    String[] stupid = line.Split('\"');
+                    child.Add(new Child(stupid[0],
+                    stupid[1],
+                    stupid[2]));
+                    //Check for keys split into more than one line
+                    if (stupid.Length < 8)
+                        line = file.ReadLine();
 
+                    line = file.ReadLine();
+                    if (line == null)
+                        break;
+                }
+                leList.Add(new Parent(parent, child));
+            }
+            return leList;
+        }
 
-        //static List<Parent> listLoader(StreamReader file)
-        //{
-        //    int key = 0;
-        //    List<Parent> leList = new List<Parent>();
-        //    String line = file.ReadLine();
-        //    while (line != null) //redundant because yolo
-        //    {
-        //        String parent = line;
-        //        line = file.ReadLine();
-        //        List<Child> child = new List<Child>();
-        //        //Stupid code incoming
-        //        while (line.Substring(0, 1).Equals("-"))
-        //        {
-        //            String[] stupid = line.Split('\"');
-        //            //Check for keys split into more than one line
-        //            if (stupid.Length < 8)
-        //            {
-        //                String firstLine = line;
-        //                line = file.ReadLine();
-        //                String mergedLines = String.Concat(firstLine, line);
-        //                String[] stupider = mergedLines.Split('\"');
-        //                child.Add(new Child(stupider[0],
-        //                stupider[1],
-        //                stupider[2],
-        //                stupider[3],
-        //                stupider[4],
-        //                stupider[5],
-        //                stupider[6],
-        //                stupider[7]));
-        //            }   
-        //            else
-        //                child.Add(new Child(stupid[0],
-        //                stupid[1],
-        //                stupid[2],
-        //                stupid[3],
-        //                stupid[4],
-        //                stupid[5],
-        //                stupid[6],
-        //                stupid[7]));
+        //Pretty sure there's something in the List API for this but I'm too stupid to figure it out :(
+        static List<Parent> mergeParents(List<Parent> par1, List<Parent> par2)
+        {
+            bool match = false;
+            for (int j = 0; j < par1.Count; j++)
+            {
+                for (int k = 0; k < par2.Count; k++)
+                {
+                    if (par2[k].parent.Equals(par1[j].parent))
+                    {
+                        match = true;
+                        break;
+                    }
+                }
 
-        //            line = file.ReadLine();
-        //            if (line == null)
-        //                break;
-        //        }
-        //        leList.Add(new Parent(parent, child));
-        //    }
-        //    return leList;
-        //}
+                if (!match)
+                {
+                    par2.Add(par1[j]);
+                }
+            }
+            return par2;
+        }
     }
 }

@@ -8,13 +8,13 @@ namespace ipavMerge
 {
     class Parent
     {
-        private string parent { get; set; }
-        private List<Child> child { get; set; }
+        public string parent { get; set; }
+        public List<Child> child { get; set; }
 
         public Parent(string parent, List<Child> child)
         {
             this.parent = parent;
-            child = this.child;
+            this.child = child;
         }
     }
 }
