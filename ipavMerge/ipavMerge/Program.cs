@@ -63,13 +63,7 @@ namespace ipavMerge
                     path1 = "working1\\";
                     path2 = "working2\\";
 
-                    //Create stupid
-                    Directory.CreateDirectory(path1 + "loggedAddresses1");
-                    Directory.CreateDirectory(path1 + "loggedPlayers1");
-                    Directory.CreateDirectory(path1 + "loggedUUIDs1");
-                    Directory.CreateDirectory(path2 + "loggedAddresses2");
-                    Directory.CreateDirectory(path2 + "loggedPlayers2");
-                    Directory.CreateDirectory(path2 + "loggedUUIDs2");
+
                     break;
                 }
             }
@@ -77,20 +71,12 @@ namespace ipavMerge
             //Load 'em up
             Console.WriteLine("Loading files...");
             StreamReader loggedAddresses1 = new StreamReader(path1 + "loggedAddresses.ipav");
-            StreamReader loggedPlayers1 = new StreamReader(path1 + "loggedPlayers.ipav");
+            //StreamReader loggedPlayers1 = new StreamReader(path1 + "loggedPlayers.ipav");
             StreamReader loggedUUIDs1 = new StreamReader(path1 + "loggedUUIDs.ipav");
             StreamReader loggedAddresses2 = new StreamReader(path2 + "loggedAddresses.ipav");
-            StreamReader loggedPlayers2 = new StreamReader(path2 + "loggedPlayers.ipav");
+            //StreamReader loggedPlayers2 = new StreamReader(path2 + "loggedPlayers.ipav");
             StreamReader loggedUUIDs2 = new StreamReader(path2 + "loggedUUIDs.ipav");
             Console.WriteLine("Making a mess...");
-
-            //Start of stupid code
-            makeMess(loggedAddresses1, path1 + "loggedAddresses1\\");
-            makeMess(loggedPlayers1, path1 + "loggedPlayers1\\");
-            makeMess(loggedUUIDs1, path1 + "loggedUUIDs1\\");
-            makeMess(loggedAddresses2, path2 + "loggedAddresses2\\");
-            makeMess(loggedPlayers2, path2 + "loggedPlayers2\\");
-            makeMess(loggedUUIDs2, path2 + "loggedUUIDs2\\");
 
 
             //List<Parent> ListAddresses1 = listLoader(loggedAddresses1);
@@ -155,54 +141,7 @@ namespace ipavMerge
                 return false;
         }
 
-        //Stupid code rendition:
-        static void makeMess(StreamReader file, String path)
-        {
-            String line = file.ReadLine();
-            while (line != null) //redundant because yolo
-            {
-                String parent = "";
-                if (line.Substring(0, 1).Equals("'"))
-                {
-                    int secondQuotationMark = line.IndexOf("'", 2);
-                    parent = line.Substring(1, secondQuotationMark - 1);
-                }
-                else
-                {
-                    int colon = line.IndexOf(":", 1);
-                    parent = line.Substring(0, colon);
-                }
-                line = file.ReadLine();
-                //Stupid code incoming
-                while (line.Substring(0, 1).Equals("-"))
-                {
-                    String[] stupid = line.Split('\"');
-                    //Check for keys split into more than one line
-                    if (stupid.Length < 8)
-                    {
-                        String firstLine = line;
-                        line = file.ReadLine();
-                        using (StreamWriter leFile = new StreamWriter(path + parent, true))
-                        {
-                            leFile.WriteLine(firstLine);
-                            leFile.WriteLine(line);
-                        }
-                    }
-                    else
-                    {
-                        using (StreamWriter leFile = new StreamWriter(path + parent, true))
-                        {
-                            leFile.WriteLine(line);
-                        }
-                    }
-                    
 
-                    line = file.ReadLine();
-                    if (line == null)
-                        break;
-                }
-            }
-        }
 
         //static List<Parent> listLoader(StreamReader file)
         //{
