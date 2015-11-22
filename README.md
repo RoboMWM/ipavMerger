@@ -1,7 +1,7 @@
 # ipavMerger
 (I should rename this but I'm too lazy to right now. Maybe after I rewrite it a couple years later)
 
-So initially I was going to make this to merge two data files of the ipav plugin but I ended up deciding not to do that for whatever reason.
+So initially I was going to make this to merge two data files of the [ipav plugin](http://dev.bukkit.org/bukkit-plugins/ipav/) but I ended up deciding not to do that for whatever reason.
 
 Instead, it merges (some) data in itself and then allows you to view relevant information (aliases, name changes).
 
