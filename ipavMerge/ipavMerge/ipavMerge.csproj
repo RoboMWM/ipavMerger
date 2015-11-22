@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Alias.cs" />
     <Compile Include="Parent.cs" />
     <Compile Include="Child.cs" />
     <Compile Include="Program.cs" />

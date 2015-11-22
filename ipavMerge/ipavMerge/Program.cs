@@ -65,6 +65,7 @@ namespace ipavMerge
             else
                 mergedAddresses = mergeParents(listAddresses2, listAddresses1);
 
+            List<Alias> listAliases = new List<Alias>();
             Console.WriteLine("Looking for aliases...");
             for (int z = 0; z < mergedAddresses.Count; z++)
             {
@@ -76,9 +77,55 @@ namespace ipavMerge
                     {
                         if (children[y].uuid != children[y + 1].uuid)
                         {
-                            Console.WriteLine("Player " + children[y].name +
-                                " is an alias of " + children[y + 1].name);
+                            int index = listAliases.FindIndex(delegate (Alias alias)
+                            { return alias.player.Equals(children[y].name); });
+                            if (index >= 0)
+                            {
+                                if (!listAliases[index].child.Exists(delegate (Child child)
+                                { return child.Equals(children[y + 1]); }))
+                                    listAliases[index].child.Add(children[y + 1]);
+                                Console.WriteLine("first " + children[y].name);
+                            }
+                            else
+                            {
+                                index = listAliases.FindIndex(delegate (Alias alias)
+                                { return alias.player.Equals(children[y + 1].name); });
+
+                                if (index >= 0)
+                                {
+                                    if (!listAliases[index].child.Exists(delegate (Child child)
+                                    { return child.Equals(children[1]); }))
+                                        listAliases[index].child.Add(children[y]);
+                                    Console.WriteLine("other " + children[y].name);
+                                }
+                                else
+                                {
+                                    List<Child> temp = new List<Child>();
+                                    temp.Add(children[y + 1]);
+                                    listAliases.Add(new Alias(children[y], temp));
+                                    Console.WriteLine("last " + children[y].name);
+                                }   
+                            }
+                            
+                            //Console.WriteLine("Player " + children[y].name +
+                            //    " is an alias of " + children[y + 1].name);
                         }
+                    }
+                }
+            }
+            while (true)
+            {
+                Console.WriteLine("Find an alias: ");
+                String wut = Console.ReadLine();
+                int index = listAliases.FindIndex(delegate (Alias alias)
+                { return alias.player.Equals(wut); });
+                Console.WriteLine(index);
+                if (index >= 0)
+                {
+                    Console.WriteLine(listAliases[index].player + " has the following aliases: ");
+                    for (int j = 0; j < listAliases[index].child.Count; j++)
+                    {
+                        Console.WriteLine(listAliases[index].child[j].name + " " + listAliases[index].child[j].uuid);
                     }
                 }
             }
