@@ -179,7 +179,7 @@ namespace ipavMerge
             }
             while (true)
             {
-                Console.WriteLine("Find an alias: ");
+                Console.WriteLine("Find an alias (enter UUID): ");
                 String wut = Console.ReadLine();
                 int index = -1;
                 for (int i = 0; i < listAliases.Count; i++)
@@ -190,7 +190,7 @@ namespace ipavMerge
                         break;
                     }
                 }
-                Console.WriteLine(index);
+                //Console.WriteLine(index);
                 if (index >= 0)
                 {
                     Console.WriteLine(wut + " has the following aliases: ");
