@@ -168,6 +168,25 @@ namespace ipavMerge
             else
                 mergedUUIDs = mergeParents(listUUIDs2, listUUIDs1);
 
+            //Feature: print players who changed names (same UUID)
+            if (args.Length > 2)
+            {
+                int val = Int32.Parse(args[2]);
+                if (val > 0)
+                {
+                    Console.WriteLine("Players who changed their name (same UUID):");
+                    for (int i = 0; i < mergedUUIDs.Count; i++)
+                    {
+                        String uuid = mergedUUIDs[i].parent;
+                        if (uuidToNameCount(uuid, mergedUUIDs) >= val)
+                        {
+                            Console.WriteLine(uuid + ":");
+                            Console.WriteLine(uuidToName(uuid, mergedUUIDs));
+                        }
+                    }
+                }
+            }
+
             for (int i = 0; i < listAliases.Count; i++)
             {
                 Console.WriteLine("Alias " + (i + 1) + ":");
@@ -369,6 +388,23 @@ namespace ipavMerge
                 return "not found";
             String oi = mergedUUIDs[index].uuidFind(uuid);
             return oi;
+        }
+        static int uuidToNameCount(String uuid, List<Parent> mergedUUIDs)
+        {
+            //for (int i = 0; i < mergedUUIDs.Count; i++)
+            //{
+            //    if (mergedUUIDs[i].parent.Equals(uuid))
+            //    index = i;
+            //    break;
+            //}
+
+            int index = mergedUUIDs.FindIndex(delegate (Parent par)
+            { return par.parent.Equals(uuid); });
+            if (index < 0)
+                return 0;
+            String oi = mergedUUIDs[index].uuidFind(uuid);
+            String[] wow = oi.Split(',');
+            return wow.Length;
         }
     }
 }
