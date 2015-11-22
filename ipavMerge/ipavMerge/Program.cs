@@ -356,13 +356,15 @@ namespace ipavMerge
 
         static string uuidToName(String uuid, List<Parent> mergedUUIDs)
         {
-            int index = -1;
-            for (int i = 0; i < mergedUUIDs.Count; i++)
-            {
-                if (mergedUUIDs[i].parent.Equals(uuid))
-                index = i;
-                break;
-            }
+            //for (int i = 0; i < mergedUUIDs.Count; i++)
+            //{
+            //    if (mergedUUIDs[i].parent.Equals(uuid))
+            //    index = i;
+            //    break;
+            //}
+
+            int index = mergedUUIDs.FindIndex(delegate(Parent par)
+            { return par.parent.Equals(uuid); });
             if (index < 0)
                 return "not found";
             String oi = mergedUUIDs[index].uuidFind(uuid);
