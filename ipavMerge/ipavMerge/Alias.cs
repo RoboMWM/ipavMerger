@@ -8,17 +8,22 @@ namespace ipavMerge
 {
     public class Alias
     {
-        public Child player { get; set; }
-        public List<Child> child { get; set; }
+        public List<string> playerUuids { get; set; }
 
-        public Alias(Child player, List<Child> child)
+        //public Alias(List<string> player, List<Child> child)
+        //{
+        //    this.playerUuids = player;
+        //    this.child = child;
+        //}
+        public Alias(List<string> player)
         {
-            this.player = player;
-            this.child = child;
+            this.playerUuids = player;
         }
-        public Alias(Child player)
+        public int uuidExist(string uuid)
         {
-            this.player = player;
+            int index = this.playerUuids.FindIndex(delegate (string str)
+            { return str.Equals(uuid); });
+            return index;
         }
     }
 }
