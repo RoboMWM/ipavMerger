@@ -18,55 +18,29 @@ namespace ipavMerge
             }
             String path1 = args[0];
             String path2 = args[1];
-            
 
-            //First backup files so if dis dum progrum dun' goofs...
-            int i = 0;
-            for (i = 0; i < 100; i++)
+            //Removed backup code as I decided to no longer auto-merge files :S
+            Console.WriteLine("Copying files to working directory...");
+                //Perform noob sanity check
+            if (Directory.Exists("working1"))
+                Directory.Delete("working1", true);
+            if (Directory.Exists("working2"))
+                Directory.Delete("working2", true);
+
+            //Now that we're all clean, let's make 'em again! Ha... ha.......
+            Directory.CreateDirectory("working1");
+            Directory.CreateDirectory("working2");
+
+            //Actually copy files to working directory
+            if (!tryBackup(path1, "working1") || !tryBackup(path2, "working2"))
             {
-                if (!Directory.Exists("backup" + i))
-                {
-                    Directory.CreateDirectory("backup" + i);
-                    Directory.CreateDirectory("backup_" + i);
-                    Console.WriteLine("Attempting to backup files to backup" + i + "...");
-
-                    //If any of this fails, just stop
-                    if (!tryBackup(path1, "backup" + i) || !tryBackup(path2, "backup_" + i))
-                    {
-                        Console.WriteLine("Backup failed, so you probably have some incorrect paths up there buddy :/");
-                        return;
-                    }
-
-                    //copy these files to a working directory *genius.jpg*
-                    Console.WriteLine("Copying files from backup to working directory...");
-
-                    //Perform noob sanity check
-                    if (Directory.Exists("working1"))
-                        Directory.Delete("working1", true);
-                    if (Directory.Exists("working2"))
-                        Directory.Delete("working2", true);
-
-                    //Now that we're all clean, let's make 'em again! Ha... ha.......
-                    Directory.CreateDirectory("working1");
-                    Directory.CreateDirectory("working2");
-                    path1 = "backup" + i;
-                    path2 = "backup_" + i;
-
-                    //copy pasta
-                    if (!tryBackup(path1, "working1") || !tryBackup(path2, "working2"))
-                    {
-                        Console.WriteLine("err, how did this happen :?");
-                        return;
-                    }
-
-                    //Set paths to working directory, then break loop.
-                    path1 = "working1\\";
-                    path2 = "working2\\";
-
-
-                    break;
-                }
+                Console.WriteLine("Hmm something bad happened, so I'll just stop while I can (check folder permissions and whatnot)");
+                return;
             }
+
+            //Set paths to working directory.
+            path1 = "working1\\";
+            path2 = "working2\\";
 
             //Load 'em up
             Console.WriteLine("Loading files...");
@@ -76,7 +50,7 @@ namespace ipavMerge
             StreamReader loggedAddresses2 = new StreamReader(path2 + "loggedAddresses.ipav");
             //StreamReader loggedPlayers2 = new StreamReader(path2 + "loggedPlayers.ipav");
             StreamReader loggedUUIDs2 = new StreamReader(path2 + "loggedUUIDs.ipav");
-            Console.WriteLine("Making a mess...");
+            Console.WriteLine("More loading...");
 
 
             List<Parent> listAddresses1 = listLoader(loggedAddresses1);
@@ -95,17 +69,15 @@ namespace ipavMerge
             for (int z = 0; z < mergedAddresses.Count; z++)
             {
                 List<Child> children = mergedAddresses[z].child;
-                Console.WriteLine(children);
                 int childCount = children.Count;
-                Console.WriteLine(mergedAddresses.Count + " yay " + childCount);
                 if (childCount > 1)
                 {
                     for (int y = 0; y < childCount - 1; y++)
                     {
-                        if (mergedAddresses[z].child[y].uuid != mergedAddresses[z].child[y + 1].uuid)
+                        if (children[y].uuid != children[y + 1].uuid)
                         {
-                            Console.WriteLine("Player " + mergedAddresses[z].child[y].name +
-                                " is an alias of " + mergedAddresses[z].child[y + 1].name);
+                            Console.WriteLine("Player " + children[y].name +
+                                " is an alias of " + children[y + 1].name);
                         }
                     }
                 }
@@ -199,7 +171,7 @@ namespace ipavMerge
                 while (line.Substring(0, 1).Equals("-"))
                 {
                     String[] stupid = line.Split('\"');
-                    child.Add(new Child(stupid[0],
+                    child.Add(new Child(stupid[0].Substring(2, stupid[0].Length - 2),
                     stupid[1],
                     stupid[2]));
                     //Check for keys split into more than one line
@@ -217,15 +189,19 @@ namespace ipavMerge
 
         //Pretty sure there's something in the List API for this but I'm too stupid to figure it out :(
         static List<Parent> mergeParents(List<Parent> par1, List<Parent> par2)
-        {
-            bool match = false;
+        {        
             for (int j = 0; j < par1.Count; j++)
             {
+                bool match = false;
                 for (int k = 0; k < par2.Count; k++)
                 {
                     if (par2[k].parent.Equals(par1[j].parent))
                     {
                         match = true;
+                        if (par1[j].child.Count > par2[k].child.Count)
+                            par2 = mergeChildren(par1, j, par2, k);
+                        else
+                            par2 = mergeChildren(par2, k, par1, j);
                         break;
                     }
                 }
@@ -235,6 +211,31 @@ namespace ipavMerge
                     par2.Add(par1[j]);
                 }
             }
+            return par2;
+        }
+
+        static List<Parent> mergeChildren(List<Parent> par1, int a, List<Parent> par2, int b)
+        {  
+            List<Child> child1 = par1[a].child;
+            List<Child> child2 = par2[b].child;
+            for (int j = 0; j < child1.Count; j++)
+            {
+                bool match = false;
+                for (int k = 0; k < child2.Count; k++)
+                {
+                    if (child2[k].Equals(child1[j]))
+                    {
+                        match = true;
+                        break;
+                    }
+                }
+
+                if (!match)
+                {
+                    child2.Add(child1[j]);
+                }
+            }
+            par2[b].child = child2;
             return par2;
         }
     }
