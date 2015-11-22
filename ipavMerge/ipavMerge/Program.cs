@@ -161,6 +161,22 @@ namespace ipavMerge
                             //    " is an alias of " + children[y + 1].name);
                 }
             }
+
+            List<Parent> mergedUUIDs;
+            if (listUUIDs1.Count > listUUIDs2.Count)
+                mergedUUIDs = mergeParents(listUUIDs1, listUUIDs2);
+            else
+                mergedUUIDs = mergeParents(listUUIDs2, listUUIDs1);
+
+            for (int i = 0; i < listAliases.Count; i++)
+            {
+                Console.WriteLine("Alias " + (i + 1) + ":");
+                for (int j = 0; j < listAliases[i].playerUuids.Count; j++)
+                {
+                    String uuid = listAliases[i].playerUuids[j];
+                    Console.WriteLine(uuid + " (" + uuidToName(uuid, mergedUUIDs) + ")");
+                }
+            }
             while (true)
             {
                 Console.WriteLine("Find an alias: ");
@@ -180,16 +196,13 @@ namespace ipavMerge
                     Console.WriteLine(wut + " has the following aliases: ");
                     for (int j = 0; j < listAliases[index].playerUuids.Count; j++)
                     {
-                        Console.WriteLine(listAliases[index].playerUuids[j]);
+                        String uuid = listAliases[index].playerUuids[j];
+                        Console.WriteLine(uuid + " (" + uuidToName(uuid, mergedUUIDs) + ")");
                     }
                 }
             }
 
-            List<Parent> mergedUUIDs;
-            if (listUUIDs1.Count > listUUIDs2.Count)
-                mergedUUIDs = mergeParents(listUUIDs1, listUUIDs2);
-            else
-                mergedUUIDs = mergeParents(listUUIDs2, listUUIDs1);
+            
 
             //for (int z = 0; z < mergedUUIDs.Count; z++)
             //{
@@ -339,6 +352,21 @@ namespace ipavMerge
             }
             par2[b].child = child2;
             return par2;
+        }
+
+        static string uuidToName(String uuid, List<Parent> mergedUUIDs)
+        {
+            int index = -1;
+            for (int i = 0; i < mergedUUIDs.Count; i++)
+            {
+                if (mergedUUIDs[i].parent.Equals(uuid))
+                index = i;
+                break;
+            }
+            if (index < 0)
+                return "not found";
+            String oi = mergedUUIDs[index].uuidFind(uuid);
+            return oi;
         }
     }
 }

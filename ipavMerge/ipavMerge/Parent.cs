@@ -16,5 +16,20 @@ namespace ipavMerge
             this.parent = parent;
             this.child = child;
         }
+
+        public string uuidFind(string uuid)
+        {
+            String oi = this.child[0].name;
+            String str = this.child[0].name;
+            for (int i = 0; i < this.child.Count; i++)
+            {
+                if (!this.child[i].name.Equals(oi))
+                {
+                    oi = child[i].name;
+                    str += (", " + oi);
+                }
+            }
+            return str;
+        }
     }
 }
